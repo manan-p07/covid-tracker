@@ -6,7 +6,7 @@ var bodyParser = require('body-parser');
 var jsonParser = bodyParser.json()
 app.use(cors());
 
-const port = 5000;
+const port = 5001;
 
 app.post('/get-current-cases', jsonParser, (req, res) => {
   // const the_request = JSON.stringify(req.body);
