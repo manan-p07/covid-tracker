@@ -1,4 +1,8 @@
-# covid-tracker
+<p align="center">
+  <img src="https://raw.githubusercontent.com/samuel-ping/covid-tracker/master/screenshots/covid_tracker_banner.png">
+</p>
+
+# Covid Tracker
 
 ### To-Do List
 - Get frontend working
