@@ -6,12 +6,9 @@ var bodyParser = require('body-parser');
 var jsonParser = bodyParser.json()
 app.use(cors());
 
-const port = 5001;
+const port = 5000;
 
 app.post('/get-current-cases', jsonParser, (req, res) => {
-  // const the_request = JSON.stringify(req.body);
-  // const requestBody = JSON.parse(req.body);
-  // console.log(requestBody);
   const state = req.body.state.toLowerCase(); // getting state from frontend
   const API_URL = 'https://api.covidtracking.com/v1/states/' + state + '/current.json';
 
@@ -30,15 +27,6 @@ app.post('/get-current-cases', jsonParser, (req, res) => {
           totalCases: totalCases,
           lastUpdate: lastUpdate
         }
-        // const returnJSON = JSON.parse(returnData);
-        // Building the final message.
-        // const message = (
-        //     `Right now, in \
-        //     ${state}, the current total is \
-        //     ${currentCases} cases and there have been \
-        //     ${totalCases} new cases as of \
-        //     ${date} EST.`.replace(/\s+/g, ' ')
-        // );
 
         console.log(returnData);
         res.json(returnData);

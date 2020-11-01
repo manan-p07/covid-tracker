@@ -57,7 +57,7 @@ class Dashboard extends Component {
         };
         console.log(data);
         
-        axios.post("http://localhost:5004/get-current-cases", data).then(res => {
+        axios.post("http://localhost:5000/get-current-cases", data).then(res => {
             console.log(res.data)
 
             // updating state with new data
