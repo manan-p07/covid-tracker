@@ -7,7 +7,6 @@ html, body {
     color: whitesmoke;
 }
 
-
 .dashboard-wrapper{
     color: white;
     display: flex;
@@ -15,8 +14,14 @@ html, body {
     justify-content: center;
     text-align: center;
     align-items: center;
-    padding: 40px;
+    /* padding: 0px; */
     font-family: 'Courier New', Courier, monospace;
+}
+
+.top {
+    background: #282c34;
+    width: 100%;
+    height: 40vh;
 }
 
 .credits {
@@ -24,7 +29,21 @@ html, body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    text-align: center;
+    color: black;
     position: absolute;
     bottom: 0;
 }
+
+
+.button {
+    background-color: #008CBA;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+  }

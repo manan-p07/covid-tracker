@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import axios from "axios";
-import GitHubIcon from "../assets/github-icon.png"
+import GitHubIcon from "../assets/github-11-24.png"
+import LineChart from "../components/LineChart"
 import "./Dashboard.css"
 
 class Dashboard extends Component {
@@ -112,31 +113,7 @@ class Dashboard extends Component {
         if(this.state.dataIsRetrieved === "true") {
             return (
             <div className="dashboard-wrapper"> 
-                <h1 className="header">Covid Tracker</h1>
-                
-                <form onSubmit={this.handleSubmit}>
-                    <label>
-                        Enter your state abbreviation: 
-                        <input type="text" onChange={this.handleChange}/>
-                    </label>
-                <input type='submit' value="Get COVID Info" />
-                </form>
-                
-                <h4> {this.state.dataRetrieved.USState.length == 2 ? this.state.USState.toUpperCase() : "(State Abb)"} Covid Info: </h4>
-                <p>Current Cases as of Today: <b>{this.state.dataRetrieved.currentCases}</b></p>
-                <p>Total Cases as of Today: <b>{this.state.dataRetrieved.totalCases}</b></p>
-                <p>Percent Change in Covid Cases since Last Month: <b>{this.state.changes.lastThirtyDaysChange}%</b></p>
-                <p>Last Updated: {this.state.dataRetrieved.lastUpdated} EST</p>
-                
-                <div className="credits">
-                        <span>Made by Manan, Grace, Sam</span>
-                        <a href="https://github.com/samuel-ping/covid-tracker" target="_blank"><img src={GitHubIcon} alt="github icon" /></a>
-                    </div>
-            </div>
-            )
-        } else {
-            return(
-                <div className="dashboard-wrapper"> 
+                <div className="top">
                     <h1 className="header">Covid Tracker</h1>
                     
                     <form onSubmit={this.handleSubmit}>
@@ -146,12 +123,47 @@ class Dashboard extends Component {
                         </label>
                     <input type='submit' value="Get COVID Info" />
                     </form>
+                    
+                    <h4> {this.state.dataRetrieved.USState.length == 2 ? this.state.USState.toUpperCase() : "(State Abb)"} Covid Info: </h4>
+                    <p>Current Cases as of Today: <b>{this.state.dataRetrieved.currentCases}</b></p>
+                    <p>Total Cases as of Today: <b>{this.state.dataRetrieved.totalCases}</b></p>
+                    <p>Percent Change in Covid Cases since Last Month: <b>{this.state.changes.lastThirtyDaysChange}%</b></p>
+                    <p>Last Updated: {this.state.dataRetrieved.lastUpdated} EST</p>
+                
+                    <a href="https://covidtracking.com/about-data/faq" target="_blank">
+                    <button> More Info about Our Data </button>
+                    </a>
+                </div>
+                {/* <LineChart /> */}
 
+                <div className="credits">
+
+                    <span>Made by Manan, Grace, Sam</span>
+                    <a href="https://github.com/samuel-ping/covid-tracker" target="_blank"><img src={GitHubIcon} alt="github icon" /></a>
+                </div>
+
+            </div>
+            )
+        } else {
+            return(
+                <div className="dashboard-wrapper"> 
+                    <div className="top">
+                        <h1 className="header">Covid Tracker</h1>
+                        
+                        <form onSubmit={this.handleSubmit}>
+                            <label>
+                                Enter your state abbreviation: 
+                                <input type="text" onChange={this.handleChange}/>
+                            </label>
+                        <input type='submit' value="Get COVID Info" />
+                        </form>
+                    </div>
+                    
                     <div className="credits">
                         <span>Made by Manan, Grace, Sam</span>
                         <a href="https://github.com/samuel-ping/covid-tracker" target="_blank"><img src={GitHubIcon} alt="github icon" /></a>
                     </div>
-                    
+
                 </div>
             );}
     }
