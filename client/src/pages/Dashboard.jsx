@@ -1,46 +1,54 @@
 import React, { Component } from 'react';
 import axios from "axios";
-import firebase from "firebase"
+import GitHubIcon from "../assets/github-icon.png"
+import "./Dashboard.css"
 
 class Dashboard extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            dataRetrieved: "false",
-            oldUSState: "",
-            USState: "",
-            currentCases: 0,
-            totalCases: 0,
-            oldCases: 0,
-            lastUpdate: ""
+            dataIsRetrieved: "false", // if data has been retrieved from backend
+            dataRetrieved: {
+                USState: "", // the current US state the user is in
+                currentCases: 0, // the current # cases in the USState
+                yesterdayCases: 0, // the # of cases there were 1 day ago
+                lastWeekCases: 0, // the # of cases there were 7 days ago
+                lastThirtyDays: 0, // the # of cases there were 30 days ago
+                totalCases: 0, // the current total number of cases 
+                lastUpdated: "" // the date the current data was retrieved
+            },
+            changes: {
+                lastThirtyDaysChange: 0,
+            },
+            previousVisit: {
+                lastVisited: "" // the last date the user came to the site
+            }
         }
 
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
-        
-        // firebase.initializeApp({
-        //     apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
-        //     authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
-        //     projectId: process.env.REACT_APP_PROJECT_ID
-        // })
-
-        // var functions = firebase.functions();
     }
 
     componentDidMount() {
         // retrieve data from previous session when page loads
-        var USState = localStorage.getItem("location");
+        var oldUSState = localStorage.getItem("location");
         var oldCases = localStorage.getItem("oldCases")
-        var lastUpdated = localStorage.getItem("lastUpdated");
+        var lastVisited = localStorage.getItem("lastUpdated");
 
         this.setState({
-            oldUSState: USState,
-            currentCases: oldCases,
-            oldCases: oldCases,
-            lastUpdated: lastUpdated
+            dataIsRetrieved: "false",
+            dataRetrieved: {
+                USState: oldUSState,
+                lastVisited: lastVisited
+            }
         })
-    
+
+        var data = {
+            state: this.state.dataRetrieved.USState
+        };
+
+        
     }
 
     handleChange(event) {
@@ -57,78 +65,55 @@ class Dashboard extends Component {
         };
         console.log(data);
         
+        // send post response to backend
         axios.post("http://localhost:5000/get-current-cases", data).then(res => {
             console.log(res.data)
 
             // updating state with new data
             this.setState({
-                dataRetrieved: "true",
-                USState: res.data.state,
-                currentCases: res.data.currentCases,
-                totalCases: res.data.totalCases,
-                lastUpdate: res.data.lastUpdate
-            });
-
-        /* First time user opens the site:
-            enter location
-            receive current cases
-            store location, store current cases as old cases, store date (all in local storage) this is done in handleSubmit()
-        The user opens the site for the second time:
-            Retrieve the old location of the user and check if it's the same as current
-            store currentcases as oldcases
-            retreive the old date
-            if old location equals new location find percent increase, if not show the # of cases for the new state
-        */
-        var saved = localStorage.getItem('savedState') === 'true';
-       
-        if(saved){
-           var oldState = localStorage.getItem("oldUSState");
-           console.log(oldState)
-           console.log(this.state.USState)
-           if(oldState.localeCompare(this.state.USState) == 0){
-                var oldcases = parseInt(localStorage.getItem("oldCases"));
-                var newcases = this.state.currentCases;
-                console.log("old and new cases below:")
-                console.log(oldcases)
-                console.log(newcases)
-                var difference = ((oldcases - newcases)/newcases)*100;
-                
-                this.setState({
-                    difference: difference,
-                    dataRetrieved: "true"
-                })
-                
-                if(difference < 0){
-                    var date = localStorage.getItem("lastUpdate");
-                    difference = difference * -1;
-                    //return <div>Percent Decrease in Covid Cases since {date}: {difference}%</div>;
+                dataIsRetrieved: "true",
+                dataRetrieved: {
+                    USState: res.data.state,
+                    currentCases: res.data.currentCases,
+                    yesterdayCases: res.data.yesterdayCases,
+                    lastWeekCases: res.data.lastWeekCases,
+                    lastThirtyDays: res.data.lastThirtyDays,
+                    totalCases: res.data.totalCases,
+                    lastUpdated: res.data.lastUpdate
                 }
-                else{
-                    var date = localStorage.getItem("lastUpdate");
-                    //return <div>Percent Increase in Covid Cases since {date}: {difference}%</div>;
-                    }
-            } else {
-                this.setState({
-                    dataRetrieved: "false"
-                })
-            }
-            console.log(this.state.dataRetrieved)
-       }
+            });
+        console.log(this.state.lastThirtyDays)
 
+        // calculating percent change from last 30 days
+        var lastThirtyDays = parseInt(this.state.dataRetrieved.lastThirtyDays);
+        var newcases = parseInt(this.state.dataRetrieved.currentCases);
+        var lastThirtyDaysChange = ((lastThirtyDays - newcases) / newcases) * 100;
+        lastThirtyDaysChange = lastThirtyDaysChange.toFixed(2) // round to two decimal places
+
+        this.setState({
+            changes:{
+                lastThirtyDaysChange: lastThirtyDaysChange
+            }
+        })
+
+        console.log(this.state.dataIsRetrieved)
+       
         // caching new data into localStorage
         localStorage.setItem("savedState", "true");
         localStorage.setItem("oldUSState", this.state.USState);
-        localStorage.setItem("oldCases", this.state.currentCases);
-        localStorage.setItem("lastUpdate", this.state.lastUpdate);
+        localStorage.setItem("lastUpdated", this.state.lastUpdated);
 
-        console.log(localStorage.getItem("lastUpdate"));
+        console.log(localStorage.getItem("lastUpdated"));
         });
 
     }
     
     render() {
-        return (
-            <>
+        if(this.state.dataIsRetrieved === "true") {
+            return (
+            <div className="dashboard-wrapper"> 
+                <h1 className="header">Covid Tracker</h1>
+                
                 <form onSubmit={this.handleSubmit}>
                     <label>
                         Enter your state abbreviation: 
@@ -136,12 +121,39 @@ class Dashboard extends Component {
                     </label>
                 <input type='submit' value="Get COVID Info" />
                 </form>
-                <p>Current Cases as of Today: {this.state.currentCases}</p>
-                <p>Total Cases as of Today: {this.state.totalCases}</p>
-                {this.state.dataRetrieved === "true" ? "Percent Change in Covid Cases since Last Checked: " + this.state.difference + "%" : ""}
-                <p>Last Updated: {this.state.lastUpdate}</p>
-            </>
-        );
+                
+                <h4> {this.state.dataRetrieved.USState.length == 2 ? this.state.USState.toUpperCase() : "(State Abb)"} Covid Info: </h4>
+                <p>Current Cases as of Today: <b>{this.state.dataRetrieved.currentCases}</b></p>
+                <p>Total Cases as of Today: <b>{this.state.dataRetrieved.totalCases}</b></p>
+                <p>Percent Change in Covid Cases since Last Month: <b>{this.state.changes.lastThirtyDaysChange}%</b></p>
+                <p>Last Updated: {this.state.dataRetrieved.lastUpdated} EST</p>
+                
+                <div className="credits">
+                        <span>Made by Manan, Grace, Sam</span>
+                        <a href="https://github.com/samuel-ping/covid-tracker" target="_blank"><img src={GitHubIcon} alt="github icon" /></a>
+                    </div>
+            </div>
+            )
+        } else {
+            return(
+                <div className="dashboard-wrapper"> 
+                    <h1 className="header">Covid Tracker</h1>
+                    
+                    <form onSubmit={this.handleSubmit}>
+                        <label>
+                            Enter your state abbreviation: 
+                            <input type="text" onChange={this.handleChange}/>
+                        </label>
+                    <input type='submit' value="Get COVID Info" />
+                    </form>
+
+                    <div className="credits">
+                        <span>Made by Manan, Grace, Sam</span>
+                        <a href="https://github.com/samuel-ping/covid-tracker" target="_blank"><img src={GitHubIcon} alt="github icon" /></a>
+                    </div>
+                    
+                </div>
+            );}
     }
 }
 
