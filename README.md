@@ -4,9 +4,10 @@
 
 # Covid Tracker
 
-### To-Do List
-- Get frontend working
-- Get backend working
+Site is live [here!](https://covid-tracker-1.web.app/) Note that the backend isn't deployed, so it won't work unless you deploy your own backend or host one locally.
 
-### Here's the plan:
-![version 3, view1](./screenshots/the_plan.png)
+### What this is
+This web app tells you the current number of COVID-19 cases in your state, as well as other useful information. It is intended to be a quick and easy tool that nearly instantly retrieves relevant data.
+
+### Technologies Used
+This is a web app built with React.js, Node.js, and Express.js. It is deployed using Google Firebase. All data comes from [covidtracking.com's](https://covidtracking.com/) API.
