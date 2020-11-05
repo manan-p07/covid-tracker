@@ -14,7 +14,6 @@ app.post('/get-current-cases', jsonParser, (req, res) => {
 
   axios.get(API_URL) // making request to API
     .then(response => {
-        console.log(response);
         // Getting the state, new cases, and total cases
         const state = response.data[0].state;
         const currentCases = response.data[0].positive;
@@ -24,6 +23,20 @@ app.post('/get-current-cases', jsonParser, (req, res) => {
         const yesterdayCases = response.data[1].positive;
         const lastWeekCases = response.data[7].positive;
         const lastThirtyDays = response.data[29].positive;
+
+        // compiling cases from pasts 30 days
+        var currentCasesDataSet = {
+          dailyCases: []
+        };
+        var counter = 0;
+        for(var dayData in response.data) {
+          console.log(dayData)
+          currentCasesDataSet.dailyCases[counter] = dayData.positive;
+          counter++;
+        }
+
+        // console.log(currentCasesDataSet.dailyCases)
+
         const returnData = {
           state: state,
           currentCases: currentCases,
@@ -31,10 +44,10 @@ app.post('/get-current-cases', jsonParser, (req, res) => {
           lastUpdate: lastUpdate,
           yesterdayCases: yesterdayCases,
           lastWeekCases: lastWeekCases,
-          lastThirtyDays: lastThirtyDays
+          lastThirtyDays: lastThirtyDays,
+          dailyData: dayData
         }
 
-        console.log(returnData);
         res.json(returnData);
     })
     .catch(error => console.log('Error', error));
